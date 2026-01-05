@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
-import { auth } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 interface ReviewFromDB {
   id: string;
@@ -25,7 +26,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     const searchParams = request.nextUrl.searchParams;
     const sort = searchParams.get("sort") || "newest";
 
@@ -119,9 +120,9 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     console.log("Session in POST review:", JSON.stringify(session, null, 2));
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -185,22 +186,51 @@ export async function POST(
 
     console.log("Inserting review for user:", userId, "character:", characterId);
 
-    // First, insert the review
-    const { data: insertedReview, error: insertError } = await supabaseAdmin
+    // Check if review already exists
+    const { data: existingReview } = await supabaseAdmin
       .from("reviews")
-      .upsert({
-        user_id: userId,
-        character_id: characterId,
-        tier,
-        comment,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: "user_id,character_id" })
-      .select()
-      .single();
+      .select("id")
+      .eq("user_id", userId)
+      .eq("character_id", characterId)
+      .maybeSingle();
 
-    if (insertError) {
-      console.error("Insert error:", insertError);
-      throw insertError;
+    let insertedReview;
+    if (existingReview) {
+      // Update existing review
+      const { data, error } = await supabaseAdmin
+        .from("reviews")
+        .update({
+          tier,
+          comment,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", existingReview.id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Update error:", error);
+        throw error;
+      }
+      insertedReview = data;
+    } else {
+      // Insert new review
+      const { data, error } = await supabaseAdmin
+        .from("reviews")
+        .insert({
+          user_id: userId,
+          character_id: characterId,
+          tier,
+          comment,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Insert error:", error);
+        throw error;
+      }
+      insertedReview = data;
     }
 
     // Then fetch the review with user data
@@ -244,8 +274,9 @@ export async function POST(
     });
   } catch (error) {
     console.error("Error creating review:", error);
+    console.error("Error details:", JSON.stringify(error, null, 2));
     return NextResponse.json(
-      { error: "Failed to create review" },
+      { error: "Failed to create review", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

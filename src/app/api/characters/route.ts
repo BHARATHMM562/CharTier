@@ -218,7 +218,7 @@ export async function POST() {
           media_id: c.mediaId,
           release_year: c.releaseYear ?? undefined,
           media_poster: c.mediaPoster ?? undefined,
-          actor_name: ('actorName' in c && (c as any).actorName) || undefined,
+          actor_name: 'actorName' in c ? (c as { actorName: string }).actorName : undefined,
           trending_score: Math.random() * 100,
           last_activity_at: new Date().toISOString()
         })));

@@ -123,7 +123,7 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
-        token.username = (user as any).username;
+        token.username = user.username;
       }
       
       if (trigger === "update" && session) {
@@ -159,7 +159,7 @@ declare module "next-auth" {
     }
   }
   
-  declare module "@auth/core/jwt" {
+  declare module "next-auth/jwt" {
     interface JWT {
       id?: string;
       username?: string;
