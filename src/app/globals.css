@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-outfit: 'Outfit', system-ui, sans-serif;
+  --font-bebas: 'Bebas Neue', system-ui, sans-serif;
+  --background: #0A0A0B;
+  --foreground: #FAFAFA;
+  --card: #141416;
+  --card-hover: #1A1A1D;
+  --border: #2A2A2D;
+  --muted: #8B8B8B;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-outfit);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #FF6B35 0%, #FFD700 50%, #00D4AA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-border {
+  position: relative;
+  background: var(--card);
+  border-radius: 12px;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 13px;
+  padding: 1px;
+  background: linear-gradient(135deg, #FF6B35 0%, #FFD700 50%, #00D4AA 100%);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.tier-badge {
+  @apply px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider;
+}
+
+.tier-goat {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  color: #000;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.tier-god {
+  background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+}
+
+.tier-enjoyable {
+  background: linear-gradient(135deg, #00D4AA 0%, #00B894 100%);
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 212, 170, 0.4);
+}
+
+.tier-mediocre {
+  background: linear-gradient(135deg, #8B8B8B 0%, #6B6B6B 100%);
+  color: #fff;
+}
+
+.tier-weak {
+  background: linear-gradient(135deg, #4A4A4A 0%, #2A2A2A 100%);
+  color: #999;
+}
+
+.media-badge {
+  @apply px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-wider;
+}
+
+.media-movie {
+  background: rgba(255, 107, 53, 0.2);
+  color: #FF6B35;
+  border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+.media-series {
+  background: rgba(0, 212, 170, 0.2);
+  color: #00D4AA;
+  border: 1px solid rgba(0, 212, 170, 0.3);
+}
+
+.media-anime {
+  background: rgba(255, 215, 0, 0.2);
+  color: #FFD700;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.card-glow {
+  transition: all 0.3s ease;
+}
+
+.card-glow:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.btn-primary {
+  @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300;
+  background: linear-gradient(135deg, #FF6B35 0%, #E84D14 100%);
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300 border;
+  background: transparent;
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.btn-secondary:hover {
+  background: var(--card-hover);
+  border-color: #FF6B35;
+}
+
+.input-field {
+  @apply w-full px-4 py-3 rounded-lg transition-all duration-300;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #FF6B35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+}
+
+.input-field::placeholder {
+  color: var(--muted);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
