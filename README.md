@@ -1,26 +1,37 @@
 # CharTier
 
-CharTier is a community-driven platform where fans can rate and discuss fictional characters from movies, series, and anime. Share your tier rankings, discover new characters, and engage with the community.
+CharTier is a community-driven platform where fans can rate and discuss fictional characters from movies, series, and anime. Users can create tier rankings, discover new characters, and engage with the community through reviews and discussions.
+
+🌐 **Live Deployment**  
+The project is live and deployed at:  
+👉 https://char-tier.vercel.app/  
+You can visit the link to explore the application in action.
+
+---
 
 ## 🚀 Features
 
-- **Character Discovery**: Explore a vast collection of characters from various media.
-- **Tier Rankings**: Rate characters and see how they stack up against each other.
-- **Media Categories**: Filter characters by Movies, Series, and Anime.
-- **Community Reviews**: Read and write reviews for your favorite (or least favorite) characters.
-- **Trending & Popular**: Stay updated with characters that are currently trending in the community.
-- **Authentication**: Secure login and profile management using NextAuth.
+- **Character Discovery** – Browse a wide range of characters from movies, series, and anime.
+- **Tier Rankings** – Rank characters into tiers and compare community ratings.
+- **Media Categories** – Filter characters by Movies, TV Series, and Anime.
+- **Community Reviews** – Share opinions and read reviews from other users.
+- **Trending & Popular** – View characters that are currently popular or trending.
+- **Authentication** – Secure login and user profile management using NextAuth.
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Database**: [MongoDB](https://www.mongodb.com/) (Character data) & [Supabase](https://supabase.com/) (PostgreSQL)
-- **Authentication**: [NextAuth.js](https://next-auth.js.org/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Charts**: [Recharts](https://recharts.org/)
-- **Data Source**: [TMDB API](https://www.themoviedb.org/documentation/api)
+- **Framework**: Next.js (App Router)
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Database**: MongoDB (character data) & Supabase (PostgreSQL)
+- **Authentication**: NextAuth.js
+- **Icons**: Lucide React
+- **Charts**: Recharts
+- **External API**: TMDB API
+
+---
 
 ## 🏁 Getting Started
 
@@ -28,68 +39,56 @@ CharTier is a community-driven platform where fans can rate and discuss fictiona
 
 - Node.js 18.x or later
 - npm, yarn, or bun
-- A MongoDB database
-- A Supabase project
-- TMDB API Key
+- MongoDB database
+- Supabase project
+- TMDB API key
 
-### Installation
+---
 
-1. **Clone the repository:**
+## 📥 Installation
+
+1. **Clone the repository**
    ```bash
    git clone <repository-url>
    cd CharTier
-   ```
+---
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   # or
-   bun install
-   ```
+## 2. Install dependencies
 
-3. **Set up environment variables:**
-   Create a `.env` file in the root directory and add the following:
-   ```env
-   # MongoDB
-   MONGODB_URI=your_mongodb_uri
+npm install
+# or
+bun install
+---
 
-   # TMDB API
-   TMDB_API_KEY=your_tmdb_api_key
-   TMDB_ACCESS_TOKEN=your_tmdb_access_token
+## 3. Set up environment variables
 
-   # NextAuth
-   NEXTAUTH_SECRET=your_nextauth_secret
-   AUTH_SECRET=your_auth_secret
-   NEXTAUTH_URL=http://localhost:3000
+Create a .env file in the root directory and add:
+# MongoDB
+MONGODB_URI=your_mongodb_uri
 
-   # Google Auth (Optional)
-   GOOGLE_CLIENT_ID=your_google_client_id
-   GOOGLE_CLIENT_SECRET=your_google_client_secret
+# TMDB API
+TMDB_API_KEY=your_tmdb_api_key
+TMDB_ACCESS_TOKEN=your_tmdb_access_token
 
-   # Supabase
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-   DATABASE_URL=your_postgresql_connection_string
-   ```
+# NextAuth
+NEXTAUTH_SECRET=your_nextauth_secret
+AUTH_SECRET=your_auth_secret
+NEXTAUTH_URL=http://localhost:3000
 
-4. **Run the development server:**
-   ```bash
-   npm run dev
-   # or
-   bun dev
-   ```
+# Google Auth (Optional)
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 
-5. **Open the application:**
-   Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+DATABASE_URL=your_postgresql_connection_string
 
-## 📁 Project Structure
+## 4. Run the development server
+npm run dev
+# or
+bun dev
 
-- `src/app`: Next.js App Router pages and API routes.
-- `src/components`: Reusable UI components.
-- `src/lib`: Utility functions, types, and database models.
-- `public`: Static assets like images and fonts.
-
-## 📝 License
-
-This project is licensed under the MIT License.
+## 5. Open the application
+http://localhost:3000
