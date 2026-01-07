@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "www.themoviedb.org",
+      },
+      {
+        protocol: "https",
         hostname: "cdn.myanimelist.net",
       },
       {

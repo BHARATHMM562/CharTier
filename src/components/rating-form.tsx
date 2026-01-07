@@ -70,7 +70,7 @@ export function RatingForm({ characterId, existingRating, onSubmit }: RatingForm
         <label className="block text-sm font-medium text-[#8B8B8B] mb-3">
           Select your tier
         </label>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
           {TIERS.map((tier) => (
             <button
               key={tier.value}

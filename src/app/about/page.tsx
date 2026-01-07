@@ -52,8 +52,8 @@ export default function AboutPage() {
             <div className="space-y-12">
               <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
                 <div className="w-full md:w-48 shrink-0 bg-white p-6 rounded-xl flex items-center justify-center">
-                  <Image 
-                    src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_1-5bdc4a7aae41e503209149074e545416c69931754029199d7589d9961d155106.svg"
+                  <Image
+                    src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_1-5bdc75aaebeb75dc7ae79426ddd9be3b2be1e342510f8202baf6bffa71d7f5c4.svg"
                     alt="TMDB Logo"
                     width={150}
                     height={50}
@@ -103,8 +103,7 @@ export default function AboutPage() {
         </div>
 
         <footer className="mt-20 text-center text-[#666] text-sm pb-10">
-          <p>© 2026 CharTier. All rights reserved.</p>
-          <p className="mt-2">Made with passion for the fan community.</p>
+          <p className="mt-2">Made by Bharath with passion for the fan community.</p>
         </footer>
       </div>
     </div>

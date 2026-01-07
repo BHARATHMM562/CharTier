@@ -2,22 +2,77 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { getMovieCharacters, getTVCharacters } from "@/lib/api/tmdb";
+import { getAnimeCharacters } from "@/lib/api/jikan";
 
-interface ReviewFromDB {
-  id: string;
-  user_id: string;
-  character_id: string;
-  tier: string;
-  comment: string;
-  created_at: string;
-  updated_at: string;
-  user: {
-    id: string;
-    username: string;
-    name: string | null;
-    image: string | null;
-  };
-  likes: { user_id: string }[];
+async function createCharacterFromExternalId(externalId: string) {
+  // Parse externalId format: {source}-{mediaType}-{mediaId}-{characterId}
+  const parts = externalId.split('-');
+  if (parts.length < 4) return null;
+
+  const source = parts[0];
+  const mediaType = parts[1];
+  const mediaId = parseInt(parts[2]);
+  const characterId = parseInt(parts[3]);
+
+  if (isNaN(mediaId) || isNaN(characterId)) return null;
+
+  try {
+    let characterData = null;
+
+    if (source === 'tmdb') {
+      if (mediaType === 'movie') {
+        const chars = await getMovieCharacters(mediaId);
+        characterData = chars.find(c => {
+          const cParts = c.externalId.split('-');
+          return parseInt(cParts[3]) === characterId;
+        });
+      } else if (mediaType === 'tv' || mediaType === 'series') {
+        const chars = await getTVCharacters(mediaId);
+        characterData = chars.find(c => {
+          const cParts = c.externalId.split('-');
+          return parseInt(cParts[3]) === characterId;
+        });
+      }
+    } else if (source === 'jikan') {
+      if (mediaType === 'anime') {
+        const chars = await getAnimeCharacters(mediaId);
+        characterData = chars.find(c => {
+          const cParts = c.externalId.split('-');
+          return parseInt(cParts[3]) === characterId;
+        });
+      }
+    }
+
+    if (!characterData) return null;
+
+    // Create the character in the database
+    const { data: created, error } = await supabaseAdmin
+      .from("characters")
+      .insert({
+        external_id: characterData.externalId,
+        source: characterData.source,
+        name: characterData.name,
+        image: characterData.image,
+        description: null,
+        media_title: characterData.mediaTitle,
+        media_type: characterData.mediaType,
+        media_id: characterData.mediaId,
+        release_year: characterData.releaseYear,
+        media_poster: characterData.mediaPoster,
+        actor_name: 'actorName' in characterData ? characterData.actorName : null,
+        trending_score: Math.random() * 100,
+        last_activity_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return created;
+  } catch (error) {
+    console.error("Error creating character from external ID:", error);
+    return null;
+  }
 }
 
 export async function GET(
@@ -28,20 +83,49 @@ export async function GET(
     const { id } = await params;
 
     let characterId = id;
+    let externalId = null;
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 
     if (!isUuid) {
-      // If not UUID, it might be an external ID.
-      const { data: character } = await supabaseAdmin
-        .from("characters")
-        .select("*")
-        .eq("external_id", id)
-        .maybeSingle();
-
-      if (!character) {
-        return NextResponse.json({ error: "Character not found" }, { status: 404 });
+      // Check if it's an ext- prefixed ID from search results
+      if (id.startsWith('ext-')) {
+        // Extract the actual external ID from the ext- format: ext-{source}-{mediaType}-{externalId}
+        const parts = id.split('-');
+        if (parts.length >= 4) {
+          // Remove 'ext-{source}-{mediaType}-' prefix to get the externalId
+          externalId = parts.slice(3).join('-');
+        }
+      } else {
+        externalId = id;
       }
-      characterId = character.id;
+
+      if (externalId) {
+        // Try to find the character by external_id
+        const { data: character } = await supabaseAdmin
+          .from("characters")
+          .select("*")
+          .eq("external_id", externalId)
+          .maybeSingle();
+
+        if (character) {
+          characterId = character.id;
+        } else {
+          // Character doesn't exist, try to create it on the fly
+          try {
+            const createdCharacter = await createCharacterFromExternalId(externalId);
+            if (createdCharacter) {
+              characterId = createdCharacter.id;
+            } else {
+              return NextResponse.json({ error: "Character not found" }, { status: 404 });
+            }
+          } catch (createError) {
+            console.error("Error creating character:", createError);
+            return NextResponse.json({ error: "Character not found" }, { status: 404 });
+          }
+        }
+      } else {
+        return NextResponse.json({ error: "Invalid character ID" }, { status: 400 });
+      }
     }
 
     // Fetch the character
@@ -136,20 +220,49 @@ export async function POST(
     }
 
     let characterId = id;
+    let externalId = null;
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 
     if (!isUuid) {
-      // It\'s an external ID, find the corresponding internal UUID
-      const { data: character, error: charError } = await supabaseAdmin
-        .from("characters")
-        .select("id")
-        .eq("external_id", id)
-        .maybeSingle();
-
-      if (charError || !character) {
-        return NextResponse.json({ error: "Character not found" }, { status: 404 });
+      // Check if it's an ext- prefixed ID from search results
+      if (id.startsWith('ext-')) {
+        // Extract the actual external ID from the ext- format: ext-{source}-{mediaType}-{externalId}
+        const parts = id.split('-');
+        if (parts.length >= 4) {
+          // Remove 'ext-{source}-{mediaType}-' prefix to get the externalId
+          externalId = parts.slice(3).join('-');
+        }
+      } else {
+        externalId = id;
       }
-      characterId = character.id;
+
+      if (externalId) {
+        // Try to find the character by external_id
+        const { data: character } = await supabaseAdmin
+          .from("characters")
+          .select("*")
+          .eq("external_id", externalId)
+          .maybeSingle();
+
+        if (character) {
+          characterId = character.id;
+        } else {
+          // Character doesn't exist, try to create it on the fly
+          try {
+            const createdCharacter = await createCharacterFromExternalId(externalId);
+            if (createdCharacter) {
+              characterId = createdCharacter.id;
+            } else {
+              return NextResponse.json({ error: "Character not found" }, { status: 404 });
+            }
+          } catch (createError) {
+            console.error("Error creating character:", createError);
+            return NextResponse.json({ error: "Character not found" }, { status: 404 });
+          }
+        }
+      } else {
+        return NextResponse.json({ error: "Invalid character ID" }, { status: 400 });
+      }
     } else {
       // It is a UUID, verify it exists before proceeding.
       const { data: character, error: charError } = await supabaseAdmin
